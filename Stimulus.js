@@ -129,7 +129,7 @@ function defineFactor(object)
       break;
   }
   Factor.spatialPattern = object.spatialPattern || Factor.spatialPattern;
-  Factor.proximity = object.proximity || Factor.proximity;
+  Factor.proximity = object.proximity;
 }
 
 function createGriddedStimulus(container,rowNum)

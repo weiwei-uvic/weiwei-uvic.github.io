@@ -1,5 +1,5 @@
 const DEFAULT_COLOR = "hsl(221, 34%, 50%)";
-const DEFAULT_HIGHLIGHT_COLOR = "hsl(7, 92%, 58%)";
+const DEFAULT_HIGHLIGHT_COLOR = "hsl(7, 92%, 50%)";
 const DEFAULT_TARGET_HUE = 7; // 7 degree out of 360
 const DEFAULT_DISTRACTOR_HUE = 221;
 const DEFAULT_SHAPE_NUM = 3;
@@ -9,7 +9,7 @@ const DEFAULT_TARGET_WIDTH = "hsl(7, 92%, 58%)";
 const DEFAULT_TARGET_LENGTH = "hsl(7, 92%, 58%)";
 const DEFAULT_DISTRACTOR_WIDTH = "hsl(7, 92%, 58%)";
 const DEFAULT_DISTRACTOR_HEIGHT = "hsl(7, 92%, 58%)";
-const DEFAULT_TARGET_LUMINANCE = "hsl(7, 92%, 58%)";
+const DEFAULT_TARGET_LUMINANCE = 50;
 const DEFAULT_DISTRACTOR_LUMINANCE = 50; //50%
 const DEFAULT_TARGET_ORIENTATION = "hsl(7, 92%, 58%)";
 const DEFAULT_DISTRACTOR_ORIENTATION = "hsl(7, 92%, 58%)";
@@ -31,10 +31,13 @@ var FeatureData ={
     terminator: null
   }
 
+// followings are global variables. They are used to store values input by users
 var SizeFlag = '';
 var TargetShape = 'rectangle';
 var DistractorShape = 'rectangle';
 var IsMultipleFeature = false;
+var Luminance = 50;
+var TargetHue = 7;
 
 function initializeFeatureData()
   {
@@ -93,14 +96,13 @@ function getHueInput()
     var distractorHueSlider = document.getElementById("distractorHueSlider");
     var targetHueSample = document.getElementById("targetHueSample");
     var distractorHueSample = document.getElementById("distractorHueSample");
-
     targetHueSlider.addEventListener("input", function() {
       var hue = targetHueSlider.value;
-      targetHueSample.style.backgroundColor = "hsl(" + hue + ", 100%, 50%)";
+      targetHueSample.style.backgroundColor = "hsl(" + hue + ", 34%, " + DEFAULT_TARGET_LUMINANCE + "%)";
     });
     distractorHueSlider.addEventListener("input", function() {
         var hue = distractorHueSlider.value;
-        distractorHueSample.style.backgroundColor = "hsl(" + hue + ", 100%, 50%)";
+        distractorHueSample.style.backgroundColor = "hsl(" + hue + ", 92%, " + DEFAULT_DISTRACTOR_LUMINANCE + "%)";
       });
 }
 
@@ -110,7 +112,10 @@ function getLuminanceInput()
   var luminanceSample = document.getElementById("luminanceSample");
   luminanceSlider.addEventListener("input", function() {
     var luminance = luminanceSlider.value;
-    luminanceSample.style.backgroundColor = "hsl(" + DEFAULT_DISTRACTOR_HUE + ", " +luminance+ "%, 50%)";
+    if(IsMultipleFeature)
+      luminanceSample.style.backgroundColor = "hsl(" + TargetHue + ", 34%, " + luminance+ "%)";
+   else
+      luminanceSample.style.backgroundColor = "hsl(" + DEFAULT_DISTRACTOR_HUE + ", 34%, " + luminance+ "%)";
   });
 }
 
@@ -119,8 +124,12 @@ function submitLuminanceInput(modalName)
     var luminanceSlider = document.getElementById("luminanceSlider");
     var luminance = luminanceSlider.value;
     initializeFeatureData();
+    Luminance = luminance;
     // use the distractor hue to set lumuniance the only variable
-    FeatureData.targetColor = "hsl(" + DEFAULT_DISTRACTOR_HUE + ", " +luminance+ "%, 50%)";
+    if(IsMultipleFeature)
+      FeatureData.targetColor = "hsl(" + TargetHue + ", 34%, " + luminance+ "%)";
+    else
+      FeatureData.targetColor = "hsl(" + DEFAULT_DISTRACTOR_HUE + ", 34%, " + luminance+ "%)";
     generateStimulus(FeatureData,{});
     closeModal(modalName);
 }
@@ -131,11 +140,15 @@ function submitHueInput(modalName)
     var distractorHueSlider = document.getElementById("distractorHueSlider");
     var targetHue = targetHueSlider.value;
     var distractorHue = distractorHueSlider.value;
+    TargetHue = targetHue;
     // Call this function makes sure there is only one feature that's changing, 
     // all the rest will maintain the default value
     initializeFeatureData();
-    FeatureData.targetColor = "hsl(" + targetHue + ", 100%, 50%)";
-    FeatureData.distractorColor = "hsl(" + distractorHue + ", 100%, 50%)";
+    var lumi = DEFAULT_TARGET_LUMINANCE;
+    if(IsMultipleFeature) 
+      lumi = Luminance;
+    FeatureData.targetColor = "hsl(" + targetHue + ", 34%, " + lumi + "%)";
+    FeatureData.distractorColor = "hsl(" + distractorHue + ", 92%, "+ DEFAULT_DISTRACTOR_LUMINANCE + "%)";
     generateStimulus(FeatureData,{});
     closeModal(modalName);
 }
