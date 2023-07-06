@@ -201,7 +201,7 @@
 
 
     
-<button>start</button>
+<button  onclick="refresh()">Refresh</button><br>
 <input type="radio" id="multiple-feature" data-clicked="false" value = "onefeature"  onclick="toggleRadioOnAndOff(this)">
 <label for="multiple-feature"> Allow multiple features selected simultaneously </label><br>
 
@@ -287,6 +287,7 @@
         }
         setIsMultipleFeature(radioButton.checked);
     }
+    function refresh(){generateStimulus({},{}); }
     getHueInput();
     getLuminanceInput();
     //activate js script
