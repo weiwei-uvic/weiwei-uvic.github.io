@@ -68,14 +68,16 @@ function defineFeature(object)
     Feature.distractorColor = object.distractorColor||Feature.distractorColor;
     Feature.tdLengthRatio = object.tdLengthRatio||Feature.tdLengthRatio;
     Feature.tdSizeRatio = object.tdSizeRatio||Feature.tdSizeRatio;
-    Feature.targetHeight = object.targetHeight;
-    Feature.targetAngle = object.targetAngle;//the default value is 0
-    Feature.distractorAngle = object.distractorAngle; //the default value is 0
     Feature.distractorShape = object.distractorShape||Feature.distractorShape;
     Feature.targetShape = object.targetShape||Feature.targetShape;
     Feature.curvature = object.curvature||Feature.curvature;
     Feature.intersection = object.intersection||Feature.intersection;
     Feature.terminator = object.terminator||Feature.terminator;
+    //for those value could be 0 --- targetAngle,distractorAngle
+    if(object.distractorShape != null)
+      Feature.distractorAngle = object.distractorAngle;
+    if(object.targetAngle != null)
+      Feature.targetAngle = object.targetAngle;
 }
 
 function defineFactor(object)
@@ -220,6 +222,17 @@ function createRandomTarget(container)
       target.style.top = `${rect.y}in`;
       target.style.width = `${targetWidth}in`;
       target.style.height = `${targetHeight}in`;
+      target.addEventListener("click", function() {
+        const textElement = document.getElementById("correct-message-window");
+
+        textElement.style.display = 'block';
+
+        // Set a timeout to hide the text element after 3 second
+        setTimeout(function() {
+          textElement.style.display = 'none'; // or textElement.style.opacity = "0";
+        }, 1500);
+
+      });
       //shape determine
       if (Feature.targetShape == 'circle')
         target.style.borderRadius = `${targetWidth}in`;
