@@ -57,7 +57,11 @@ function initializeFeatureData()
         intersection: null,
         terminator: null
       };
-
+    if(TargetShape != DistractorShape)
+      {
+        FeatureData.targetColor = DEFAULT_COLOR;
+        FeatureData.distractorColor = DEFAULT_COLOR;
+      }
     // When users set the target shape and distractor shape the same one. shape is not a feature
     // if(TargetShape == DistractorShape)
     // {
@@ -216,15 +220,11 @@ function closeShapeModal(modalName)
 }
 
 function submitShapeInput(modalName){
-  if(TargetShape != FeatureData.targetShape|| DistractorShape != FeatureData.distractorShape)
-  {
-    //initializeFeatureData();
-    //if the shapes of target and distractor are the same, hue is the "preattentive feature"
-    if(TargetShape == DistractorShape)
-      FeatureData.targetColor = DEFAULT_HIGHLIGHT_COLOR;
-    FeatureData.targetShape = TargetShape;
-    FeatureData.distractorShape = DistractorShape;
-    generateStimulus(FeatureData,{});
-  }
+
+  initializeFeatureData();
+  //if the shapes of target and distractor are the same, hue is the "preattentive feature"
+  FeatureData.targetShape = TargetShape;
+  FeatureData.distractorShape = DistractorShape;
+  generateStimulus(FeatureData,{});
   closeShapeModal(modalName);
 }

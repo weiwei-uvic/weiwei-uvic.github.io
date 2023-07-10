@@ -1,6 +1,6 @@
 //default feature setting
 const defaultShape = 'rectangle';
-const defaultElementColor = '#526da8';
+const DEFAULTELEMENTCOLOR = '#526da8';
 const defaultTargetColor = '#f64932';
 const defaultHeightWidthRatio = 2.5;
 const defaultOrientation = 'rectangle'; 
