@@ -28,7 +28,8 @@ var FeatureData ={
     curvature: null,
     closure: null,
     intersection: null,
-    terminator: null
+    terminator: null,
+    activeFeature: "Hue" //The default feature is hue
   }
 
 // followings are global variables. They are used to store values input by users
@@ -39,7 +40,7 @@ var IsMultipleFeature = false;
 var Luminance = 50;
 var TargetHue = 7;
 
-function initializeFeatureData()
+function initializeFeatureData(featureName)
   {
     if(IsMultipleFeature)
       return;
@@ -55,7 +56,8 @@ function initializeFeatureData()
         curvature: null,
         closure: null,
         intersection: null,
-        terminator: null
+        terminator: null,
+        activeFeature: featureName
       };
     if(TargetShape != DistractorShape)
       {
@@ -74,7 +76,7 @@ function openFeatureModal(modalName, flag) {
     if (modalName == "size_input_window")
         {
           SizeFlag = flag;
-          if(flag == "length" && (FeatureData.targetShape!= "rectangle" ||FeatureData.distractorShape!= "rectangle" ))
+          if(flag == "Length" && (FeatureData.targetShape!= "rectangle" ||FeatureData.distractorShape!= "rectangle" ))
           {
             const errorWindow = document.getElementById("error-window");
             errorWindow.style.display = 'block';
@@ -127,7 +129,7 @@ function submitLuminanceInput(modalName)
 {
     var luminanceSlider = document.getElementById("luminanceSlider");
     var luminance = luminanceSlider.value;
-    initializeFeatureData();
+    initializeFeatureData("Luminance");
     Luminance = luminance;
     // use the distractor hue to set lumuniance the only variable
     if(IsMultipleFeature)
@@ -147,7 +149,7 @@ function submitHueInput(modalName)
     TargetHue = targetHue;
     // Call this function makes sure there is only one feature that's changing, 
     // all the rest will maintain the default value
-    initializeFeatureData();
+    initializeFeatureData("Hue");
     var lumi = DEFAULT_TARGET_LUMINANCE;
     if(IsMultipleFeature) 
       lumi = Luminance;
@@ -175,10 +177,10 @@ function useDeafult(modalName){
 function submitSizeInput(modalName){
   var SizeInput = document.getElementById("size_input");
   var Size = SizeInput.value;
-  initializeFeatureData();
-  if(SizeFlag == 'size')
+  initializeFeatureData(SizeFlag);
+  if(SizeFlag == 'Size')
     FeatureData.tdSizeRatio = Size;
-  else if(SizeFlag == 'length')
+  else if(SizeFlag == 'Length')
     FeatureData.tdLengthRatio = Size;
   generateStimulus(FeatureData,{});
   closeModal(modalName);
@@ -187,7 +189,7 @@ function submitSizeInput(modalName){
 function submitOrientationInput(modalName){
   var targetAngle = document.getElementById("angle_input1").value;
   var distractorAngle = document.getElementById("angle_input2").value;
-  initializeFeatureData();
+  initializeFeatureData("Orientation");
   FeatureData.targetAngle = targetAngle;
   FeatureData.distractorAngle = distractorAngle;
   generateStimulus(FeatureData,{});
@@ -221,7 +223,7 @@ function closeShapeModal(modalName)
 
 function submitShapeInput(modalName){
 
-  initializeFeatureData();
+  initializeFeatureData("Shape");
   //if the shapes of target and distractor are the same, hue is the "preattentive feature"
   FeatureData.targetShape = TargetShape;
   FeatureData.distractorShape = DistractorShape;

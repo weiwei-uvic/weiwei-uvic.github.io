@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shape Picker Pop-up</title>
+  <script src="Stimulus_Paricipants.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+  <input type="file" id="csvFileInput">
+  <button id="readButton">Read CSV</button>
+  
+</body>
+<script>
+document.getElementById("readButton").addEventListener("click", function() {
+  const fileInput = document.getElementById("csvFileInput");
+
+  // Check if a file is selected
+  if (fileInput.files.length > 0) {
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    // FileReader onload event
+    reader.onload = function(event) {
+      const csvData = event.target.result;
+
+      // Parse CSV data using Papaparse
+      const parsedData = Papa.parse(csvData, { header: true });
+      
+      // Access and work with the parsed data (array of objects)
+      const dataArray = parsedData.data;
+      createStimulus(dataArray)
+    };
+    
+    // Read the file as text
+    reader.readAsText(file);
+    // const canvas = document.getElementById("myCanvas");
+    // const ctx = canvas.getContext("2d");
+
+    // // Array of rectangle properties
+    // const rectangles = [
+    //   { x: 50, y: 50, width: 200, height: 100, color: "#ff0000" },
+    //   { x: 500, y: 150, width: 100, height: 150, color: "#00ff00" },
+    //   { x: 300, y: 600, width: 120, height: 80, color: "#0000ff" }
+    // ];
+
+    // // Draw the rectangles
+    // rectangles.forEach(rectangle => {
+    //   ctx.fillStyle = rectangle.color;
+    //   ctx.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+    // });
+  }
+});
+</script>
+</html>

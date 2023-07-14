@@ -5,7 +5,8 @@ var FactorData ={
     targetLocationY: null,
     orientation: 0,
     spatialPattern: 'random', //type: string
-    proximity : null
+    proximity : null,
+    activeFactor: "None"
   }
 
 /* 
@@ -19,7 +20,7 @@ var NumberFlag = null;
 
 var LocationFlag = true;
 
-function initializeFactorData()
+function initializeFactorData(factorName)
 {
     FactorData ={
         targetNumber: 1,
@@ -28,31 +29,32 @@ function initializeFactorData()
         targetLocationY: null,
         orientation: 0,
         spatialPattern: 'random', //type: string
-        proximity : null //proximity should be a positive value. The default value is negative, means no proximity
+        proximity : null, //proximity should be a positive value. The default value is negative, means no proximity
+        activeFactor: factorName
       }; 
 }
 
 function setTargetNumber(num)
 {
     //reset FactorData
-    initializeFactorData();
+    initializeFactorData("TargetNumber");
     FactorData.targetNumber = num;
 }
 
 function setProximity(num)
 {
     //reset FactorData
-    initializeFactorData();
+    initializeFactorData("Proximity");
     FactorData.proximity = num;
 }
 function setElementNumber(num)
 {
-    initializeFactorData();
+    initializeFactorData("ElementNumber");
     FactorData.elementNumber = num;
 }
 
 function setTargetLocation(value){
-    initializeFactorData();
+    initializeFactorData("TargetLocation");
     if(LocationFlag)
         FactorData.targetLocationX = value;
     else
@@ -61,7 +63,7 @@ function setTargetLocation(value){
 
 function setSpatialPattern(value)
 {
-    initializeFactorData();
+    initializeFactorData("SpatialPattern");
     FactorData.spatialPattern = value;
 }
 

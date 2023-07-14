@@ -40,7 +40,8 @@ var Feature ={
   curvature: null,
   closure: null,
   intersection: null,
-  terminator: null
+  terminator: null,
+  activeFeature: "Hue"
 }
 
 // The data structure that store all necessary factor info for an experiment
@@ -50,7 +51,8 @@ var Factor ={
   targetLocation: {}, //Has 4 variables - left, right, top, middle 
   orientation: 0,
   spatialPattern: null, //string: "Gridded", "Randomized"
-  proximity : null  // type: float
+  proximity : null,  // type: float
+  activeFactor: "None"
 }
 
 // The data structure that stores all elements
@@ -73,6 +75,7 @@ function defineFeature(object)
     Feature.curvature = object.curvature||Feature.curvature;
     Feature.intersection = object.intersection||Feature.intersection;
     Feature.terminator = object.terminator||Feature.terminator;
+    Feature.activeFeature = object.activeFeature||Feature.activeFeature;
     //for those value could be 0 --- targetAngle,distractorAngle
     if(object.distractorShape != null)
       Feature.distractorAngle = object.distractorAngle;
@@ -132,6 +135,7 @@ function defineFactor(object)
   }
   Factor.spatialPattern = object.spatialPattern || Factor.spatialPattern;
   Factor.proximity = object.proximity;
+  Factor.activeFactor = object.activeFactor;
 }
 
 function createGriddedStimulus(container,rowNum)
@@ -376,7 +380,7 @@ function saveRandomSeed()
   }
 
   // Create CSV content
-  let csvContent = "left, top, isTarget\r\n";
+  let csvContent = "left,top,isTarget\r\n";
 
   data.forEach(row => {
     const csvRow = row.join(",");
@@ -432,7 +436,7 @@ function showInfo(infoContainer,stimulusContainer,factorData)
              "<b>Vertical location restriction: </b>" + yLocationText + "<br>" +
              "<b>Spatial pattern: </b>" + spatialPatternText + "<br>" +
              "<b>Proximity: </b>" + proximityText + "<br>";
-  CSVFileName = Factor.targetNumber.toString() + "_" + Factor.elementNumber + "_"+ xLocationText + "_"+ yLocationText + "_"+ spatialPatternText + "_"+ proximityText;
+  CSVFileName = Feature.activeFeature +"_"+ Factor.targetNumber.toString() + "_" + Factor.elementNumber; //+ "_"+ xLocationText + "_"+ yLocationText + "_"+ spatialPatternText + "_"+ proximityText;
   infoContainer.innerHTML = info;
 }
 
