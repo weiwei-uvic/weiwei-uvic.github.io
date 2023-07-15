@@ -383,12 +383,12 @@ function saveRandomSeed()
   let csvContent = "left,top,isTarget\r\n";
 
   data.forEach(row => {
-    const csvRow = row.join(",");
+    const csvRow = row.map(value => String(value).trim()).join(",");
     csvContent += csvRow + "\r\n";
   });
 
   // Create Blob object
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
   //CSVFileName was assigned in showInfo() function
   var fileName = CSVFileName + ".csv"
     
