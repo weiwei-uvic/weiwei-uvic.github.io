@@ -166,12 +166,14 @@ function createGriddedStimulus(container,rowNum)
       element.style.position = "absolute";
       element.style.left = `${x}in`;
       element.style.top = `${y}in`;
+      const rect = { x, y, width: targetWidth, height: targetHeight, isTarget: "false"  };
       if(count == targetPos)
-      {console.log("It is the number " + count + ", and it's the target");
+      {
         element.classList.add(Feature.targetShape);
         element.style.backgroundColor  = Feature.targetColor;
         element.style.width = `${targetWidth}in`;
         element.style.height = `${targetHeight}in`;
+        rect.isTarget = "true";
         //rotate target
         element.style.transform = `rotate(${Feature.targetAngle}deg)`;
         if (Feature.targetShape == 'circle')
@@ -188,6 +190,7 @@ function createGriddedStimulus(container,rowNum)
           element.style.borderRadius = `${ElementWidth}in`;
       }
       ElementArray.push(element);
+      ElementsRect.push(rect);
       count++;
       //elements.push({ x, y });
       container.appendChild(element);
