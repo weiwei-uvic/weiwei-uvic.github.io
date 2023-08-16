@@ -19,9 +19,11 @@ var FactorData ={
 var NumberFlag = null;
 
 var LocationFlag = true;
-
+var IsMultipleFactor = false;
 function initializeFactorData(factorName)
 {
+    if(IsMultipleFactor)
+      return;
     FactorData ={
         targetNumber: 1,
         elementNumber: 36,
@@ -33,6 +35,8 @@ function initializeFactorData(factorName)
         activeFactor: factorName
       }; 
 }
+
+function setIsMultipleFactor(value){IsMultipleFactor = value;console.log("factor setting updates")}
 
 function setTargetNumber(num)
 {

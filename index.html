@@ -212,7 +212,8 @@
 <button  onclick="refresh()">Refresh</button><br>
 <input type="radio" id="multiple-feature" data-clicked="false" value = "onefeature"  onclick="toggleRadioOnAndOff(this)">
 <label for="multiple-feature"> Allow multiple features selected simultaneously </label><br>
-
+<input type="radio" id="multiple-factor" data-clicked="false" value = "onefactor"  onclick="toggleRadioOnAndOff(this)">
+<label for="multiple-factor"> Allow multiple factors selected simultaneously </label><br>
 
 <script>
 
@@ -289,11 +290,15 @@
         if (radioButton.getAttribute("data-clicked") == "true") {
             radioButton.checked = false;
             radioButton.setAttribute("data-clicked", "false");
-        } else {
+        } 
+        else {
             radioButton.setAttribute("data-clicked", "true");
             radioButton.checked = true;
         }
-        setIsMultipleFeature(radioButton.checked);
+        if (radioButton.id == "multiple-feature")
+            setIsMultipleFeature(radioButton.checked);
+        else if(radioButton.id == "multiple-factor")
+            setIsMultipleFactor(radioButton.checked);
     }
     function refresh(){generateStimulus({},{}); }
 

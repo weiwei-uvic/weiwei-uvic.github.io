@@ -23,10 +23,15 @@ const defaultSpatialPattern = null;
 const defaultProximity = null;
 
 //Macro const for the stimulus container
-const DEFAULT_RECTANGLE_SIZE = [0.233, 0.583]; //width, height
+const DEFAULT_RECTANGLE_SIZE = [12/43, 30/43]; //width, height
 const STIMULUSCONTAINERWIDTH = 8;//inchs
 const STIMULUSCONTAINERHEIGHT = 6;
 const DPI = 96;// this DPI only works on Wei's screen
+
+
+const DEGREE_RECT_LENGTH = 1.5; // The subtended degree of the display width;
+const DEGREE_FOCUS_LONG = 14; // The subtended degree of the focus area;
+const DEGREE_FOCUS_SHORT = 10;// 210/150 = DEGREE_FOCUS_LONG/DEGREE_FOCUS_SHORT
 // The data structure that store all necessary feature info for an experiment
 var Feature ={
   targetShape: "rectangle",
@@ -148,12 +153,8 @@ function createGriddedStimulus(container,rowNum)
     elementHeight = ElementWidth * defaultHeightWidthRatio;
   if(Feature.targetShape == "rectangle")
     targetHeight = targetsize[1]; 
-  console.log("element width: " + ElementWidth);
-  console.log("element height: " + elementHeight);
-  console.log("target width: " + targetWidth);
-  console.log("target width: " + targetHeight);
   var elementPaddingH = (STIMULUSCONTAINERWIDTH - rowNum*ElementWidth)/(rowNum+1);
-  var elementPaddingV = (STIMULUSCONTAINERHEIGHT - defaultHeightWidthRatio*rowNum*ElementWidth)/(rowNum+1);;
+  var elementPaddingV = (STIMULUSCONTAINERHEIGHT - defaultHeightWidthRatio*rowNum*ElementWidth)/(rowNum+1);
   
   var targetPos = parseInt(Math.random() * (Factor.elementNumber));
   var count = 1;
@@ -268,7 +269,6 @@ function createRandomTarget(container)
 function drawCircle(target,r,container)
 {
   const containerRect = container.getBoundingClientRect();
-  console.log(containerRect);
   // Create an SVG element
   var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   // Set the SVG attributes (e.g., width, height)
@@ -290,12 +290,79 @@ function drawCircle(target,r,container)
   circle.setAttribute("fill", "white");
   circle.setAttribute("stroke", "black");
   circle.setAttribute("stroke-dasharray", "5,5");
-
+  
   // Append the circle to the SVG element
   svg.appendChild(circle);
   //svg.style.visibility = "hidden"
   // Append the SVG element to the div
   container.appendChild(svg);
+}
+
+
+/**
+ * Draw the focus area.
+ * Here the setting is: The focus area is circle, it's diameter subtends 18 degree. 18 is based on: https://en.wikipedia.org/wiki/Peripheral_vision
+ */
+function drawFocusArea(container)
+{ 
+  const containerRect = container.getBoundingClientRect();
+  var virtualViewDis = DEFAULT_RECTANGLE_SIZE[1]/Math.tan(DEGREE_RECT_LENGTH*Math.PI/180);
+  var focusAreaLongRadius = DPI*virtualViewDis * Math.tan(DEGREE_FOCUS_LONG*Math.PI/180)/2;
+  var focusAreaShortRadius = DPI*virtualViewDis * Math.tan(DEGREE_FOCUS_SHORT*Math.PI/180)/2;
+  var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  // Set the SVG attributes (e.g., width, height)
+  svg.setAttribute("width", containerRect.width.toString());
+  svg.setAttribute("height", containerRect.height.toString());
+  svg.setAttribute("left", containerRect.left.toString());
+  svg.setAttribute("top", containerRect.top.toString());
+  svg.id = "focus_svg_for_proximity";
+  //svg.setAttribute("border", "2px solid red");
+  // Create a circle element
+  var circle = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+  //console.log('focusAreaRadius', focusAreaRadius);
+  // Set the circle attributes (e.g., cx, cy, r, fill)
+  var xpos = DPI*STIMULUSCONTAINERWIDTH/2;
+  var ypos = DPI*STIMULUSCONTAINERHEIGHT/2;
+  circle.setAttribute("cx", xpos.toString());
+  circle.setAttribute("cy", ypos.toString());
+  circle.setAttribute("rx", focusAreaLongRadius.toString());
+  circle.setAttribute("ry", focusAreaShortRadius.toString());
+  circle.setAttribute("fill", "none");
+  circle.setAttribute("stroke", "black");
+  circle.setAttribute("stroke-dasharray", "5,5");
+
+  // Append the circle to the SVG element
+  svg.appendChild(circle);
+  // Draw the two lines
+
+  // Set attributes for the line
+  var line1StarterX = 0;
+  var line1StarterY = 0;
+  var line1EndX = DPI*STIMULUSCONTAINERWIDTH;
+  var line1EndY = DPI*STIMULUSCONTAINERHEIGHT;
+  var line2StarterX = DPI*STIMULUSCONTAINERWIDTH;
+  var line2StarterY = 0;
+  var line2EndX = 0;
+  var line2EndY = DPI*STIMULUSCONTAINERHEIGHT;
+  var line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line.setAttribute("x1", line1StarterX.toString());
+  line.setAttribute("y1", line1StarterY.toString());
+  line.setAttribute("x2", line1EndX.toString());
+  line.setAttribute("y2", line1EndY.toString());
+  line.setAttribute("stroke", "black");
+  line.setAttribute("stroke-dasharray", "5,5");
+  var line2 = document.createElementNS("http://www.w3.org/2000/svg", "line");
+  line2.setAttribute("x1", line2StarterX.toString());
+  line2.setAttribute("y1", line2StarterY.toString());
+  line2.setAttribute("x2", line2EndX.toString());
+  line2.setAttribute("y2", line2EndY.toString());
+  line2.setAttribute("stroke", "black");
+  line2.setAttribute("stroke-dasharray", "5,5");
+  svg.appendChild(line);
+  svg.appendChild(line2);
+  // Append the SVG element to the div
+  container.appendChild(svg);
+
 }
 
 function createRandomElements(container)
@@ -347,10 +414,10 @@ function checkCollision(element, elements)
 {
   for (const rect of elements) {
     if (
-      element.x < rect.x + rect.width &&
-      element.x + element.width > rect.x &&
-      element.y < rect.y + rect.height &&
-      element.y + element.height > rect.y
+      element.x < rect.x + rect.width + 0.005&&
+      element.x + element.width  + 0.005 > rect.x &&
+      element.y < rect.y + rect.height + 0.005 &&
+      element.y + element.height  + 0.005 > rect.y
     ) {
         return true;
     }
@@ -448,6 +515,7 @@ function generateStimulus(featureData, factorData) {
     defineFeature(featureData);
     defineFactor(factorData);
     console.log(Feature);
+    console.log(Factor);
     ElementsRect = [];
     // clear the element array
     ElementArray = [];
@@ -488,4 +556,5 @@ function generateStimulus(featureData, factorData) {
         createRandomTarget(stimulusContainer);
         createRandomElements(stimulusContainer);
       }
+      drawFocusArea(stimulusContainer);
 }
