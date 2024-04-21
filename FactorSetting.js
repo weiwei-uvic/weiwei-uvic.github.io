@@ -6,7 +6,9 @@ var FactorData ={
     orientation: 0,
     spatialPattern: 'random', //type: string
     proximity : null,
-    activeFactor: "None"
+    activeFactor: "None",
+    row:0, // row and col only works when the spatial pattern is gridded
+    col:0
   }
 
 /* 
@@ -32,7 +34,9 @@ function initializeFactorData(factorName)
         orientation: 0,
         spatialPattern: 'random', //type: string
         proximity : null, //proximity should be a positive value. The default value is negative, means no proximity
-        activeFactor: factorName
+        activeFactor: factorName,
+        row: 0,
+        col: 0
       }; 
 }
 
@@ -71,6 +75,14 @@ function setSpatialPattern(value)
     FactorData.spatialPattern = value;
 }
 
+// set the col and row number for gridded stimulus. It doesn't need specify activated factor 
+// because the setSpatialPattern has done it
+function setGriddedLayout(row,col)
+{
+    FactorData.row = row;
+    FactorData.col = col;
+}
+
 function openModal(modalName, flag) {
     const modal = document.getElementById(modalName);
     modal.style.display = 'block';
@@ -94,13 +106,14 @@ function submitRadioInput(modalName) {
         {
             setSpatialPattern(isGridded.value);
             isGridded.checked = false;
+            openRowColSetWindow();
         }
     if(isRandom.checked)
         {
             setSpatialPattern(isRandom.value);
             isRandom.checked = false;
         }
-    generateStimulus({},FactorData)
+    
     closeModal(modalName);
     isGridded.checked = false;
     isRandom.checked = false;
@@ -141,6 +154,23 @@ function submitInput(modalName) {
     }
     else
         initializeFactorData();
+    generateStimulus({},FactorData);
+    closeModal(modalName);
+}
+
+function submit2NumberInput(modalName) {
+    
+    const rowNumInput = document.getElementById('row_number_input').value;
+    const colNumInput = document.getElementById('col_number_input').value;
+    console.log("rowNumInput； ",rowNumInput);
+    console.log("rowNumInput； ",colNumInput);
+    if(rowNumInput>0 && colNumInput>0)
+    {   
+        setGriddedLayout(rowNumInput, colNumInput);
+    }
+    else
+        initializeFactorData();
+    console.log(FactorData)
     generateStimulus({},FactorData);
     closeModal(modalName);
 }

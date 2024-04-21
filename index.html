@@ -11,6 +11,7 @@
     <script src="FactorSetting.js"></script>
     <script src="FeatureSetting.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+    <script src="https://colorjs.io/dist/color.global.js"></script>
 </head>
 
 <body>
@@ -21,7 +22,7 @@
                 <td class = "cell-size"><a href = "#" onclick = "openHueWindow()">HUE</a></td>
                 <td class = "cell-size"><a href = "#" onclick = "openSizeWindow('Length')">LENGTH</a></td>
                 <td class = "cell-size"><a href = "#" onclick = "openSizeWindow('Size')">SIZE</a></td>
-                <td class = "cell-size"><a href = "#" onclick = "openLuminanceWindow()">LUMINANCE</a></td>
+                <!-- <td class = "cell-size"><a href = "#" onclick = "openLuminanceWindow()">LUMINANCE</a></td> -->
                 <td class = "cell-size"><a href = "#" onclick = "openOrientationWindow()">ORIENTATION</a></td>
                 <td class = "cell-size"><a href = "#" onclick = "openShapeWindow()">SHAPE</a></td>
                 <td class = "cell-size"><a href = "#" onclick = "handleFeatureClick(this,6)">CLOSURE</a></td>
@@ -74,7 +75,7 @@
         <div class="modal-content">
           <span class="close"  onclick="closeModal('error-window')">&times;</span>
           <h2>Error</h2>
-          <p>You can only change length when all elements are rectangles</p>
+          <p id = "errorMessage">You can only change length when all elements are rectangles</p>
         </div>
       </div>
     <!--
@@ -147,33 +148,38 @@
     <div id="hue_input_window" class="modal" name="input_window">
         <div class="modal-content">
             <span class="close" onclick="closeModal('hue_input_window')">&times;</span>
-            <h2 id = "hue_title">Choose your hue</h2>
+            <h2 id = "hue_title">Target Color</h2>
             <div class="hueContainer">
-                <label for="input">The Target Hue: </label>
-                <input type="range" id="targetHueSlider"  class = "feature-Slider" min="0" max="360" step="1" value="0">
-                <div id="targetHueSample" class = "hue-Sample"></div>
+                    <label for="input">Hue: </label>
+                    <input type="number" id="targetHNumber" min="0" max="360" value="7">
+                    <input type="range" id="targetHueSlider"  class = "feature-Slider" min="0" max="360" step="1" value="7">
+                    
+                    <label for="input">Saturation: </label>
+                    <input type="number" id="targetSNumber" min="0" max="100" value="92">
+                    <input type="range" id="targetSaturationSlider"  class = "feature-Slider" min="0" max="100" step="1" value="92">
+                    
+                    <label for="input">Luminance: </label>
+                    <input type="number" id="targetLNumber" min="0" max="100" value="50">
+                    <input type="range" id="targetLuminanceSlider"  class = "feature-Slider" min="0" max="100" step="1" value="50">
+                    
+                <div id="targetHueSample" class = "hue-SampleT"></div>
             </div>
+            <h2 id = "hue_title">Distractor Color</h2>
             <div class="hueContainer">
-                <label for="input">Distractors Hue: <br /></label>
-                <input type="range" id="distractorHueSlider"  class = "feature-Slider" min="0" max="360" step="1" value="0">
-                <div id="distractorHueSample"  class = "hue-Sample"></div>
+                <label for="input">Hue: </label>
+                <input type="range" id="distractorHueSlider"  class = "feature-Slider" min="0" max="360" step="1" value="221">
+                <input type="number" id="distractorHNumber" min="0" max="360" value="221">
+                <label for="input">Saturation: </label>
+                <input type="range" id="distractorSaturationSlider"  class = "feature-Slider" min="0" max="100" step="1" value="34">
+                <input type="number" id="distractorSNumber" min="0" max="100" value="34">
+                <label for="input">Luminance: </label>
+                <input type="range" id="distractorLuminanceSlider"  class = "feature-Slider" min="0" max="100" step="1" value="50">
+                <input type="number" id="distractorLNumber" min="0" max="100" value="50">
+                <div id="distractorHueSample" class = "hue-SampleD"></div>
             </div>
+            <h2 id = "ciede00_txt">The CIEDE2000 difference between the two color is: <b id = "ciede00_value">0</b> </h2>
             <button onclick="submitHueInput('hue_input_window')">Submit</button>
             <button onclick="useDeafult('hue_input_window')">Adapt Default Hue</button>
-        </div>
-    </div>
-    <!-- The window that get inputs of LUMINANCE -->
-    <div id="luminance_input_window" class="modal" name="input_window">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal('luminance_input_window')">&times;</span>
-            <h2 id = "luminance_title">Choose your luminance</h2>
-            <div class="hueContainer">
-                <label for="input">Target Luminance: <br /></label>
-                <input type="range" id="luminanceSlider"  class = "feature-Slider" min="0" max="100" step="1" value="50">
-                <div id="luminanceSample"  class = "luminance-Sample"></div>
-            </div>
-            <button onclick="submitLuminanceInput('luminance_input_window')">Submit</button>
-            <button onclick="useDeafult('luminance_input_window')">Adapt Default Luminance</button>
         </div>
     </div>
 
@@ -206,7 +212,18 @@
             <button onclick="submitShapeInput('shape_input_window')">Submit</button>
         </div>
     </div>
-
+    <!-- The window that get inputs of column number and row number for gridded.  -->
+    <div id="number2_input_window" class="modal" name="input_window">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('number2_input_window')">&times;</span>
+            <h2 id = "number_title">Input your value</h2>
+            <label for="input">Row Number:</label>
+            <input type="number" id="row_number_input" name="input_row"><br><br>
+            <label for="input">Column Number:</label>
+            <input type="number" id="col_number_input" name="input_col"><br><br>
+            <button onclick="submit2NumberInput('number2_input_window')">Submit</button>
+        </div>
+    </div>
 
     
 <button  onclick="refresh()">Refresh</button><br>
@@ -214,6 +231,8 @@
 <label for="multiple-feature"> Allow multiple features selected simultaneously </label><br>
 <input type="radio" id="multiple-factor" data-clicked="false" value = "onefactor"  onclick="toggleRadioOnAndOff(this)">
 <label for="multiple-factor"> Allow multiple factors selected simultaneously </label><br>
+<input type="radio" id="foveation-trace" data-clicked="true" value = "foveation"  onclick="toggleRadioOnAndOff(this)">
+<label for="multiple-factor"> Show foveation area </label><br>
 
 <script>
 
@@ -223,12 +242,13 @@
     }
 
     function openHueWindow(){
+        const ciede = document.getElementById('ciede00_value');
         openFeatureModal("hue_input_window");
     }
 
-    function openLuminanceWindow(){
-        openFeatureModal("luminance_input_window");
-    }
+    // function openLuminanceWindow(){
+    //     openFeatureModal("luminance_input_window");
+    // }
     function openOrientationWindow(){
         openFeatureModal("angle_input_window");
     }
@@ -254,6 +274,9 @@
     }
     function openPatternSetWindow(){
         openModal("pattern_choice_window");
+    }
+    function openRowColSetWindow(){
+        openModal("number2_input_window");
     }
     function openLocationSetWindow(flag){
         const heading = document.getElementById('location_title');
@@ -299,11 +322,13 @@
             setIsMultipleFeature(radioButton.checked);
         else if(radioButton.id == "multiple-factor")
             setIsMultipleFactor(radioButton.checked);
+        else if(radioButton.id == "foveation-trace")
+            setFoveationArea(radioButton.checked);
     }
     function refresh(){generateStimulus({},{}); }
 
     getHueInput();
-    getLuminanceInput();
+    // getLuminanceInput();
     //activate js script
     generateStimulus({},{}); 
 </script>

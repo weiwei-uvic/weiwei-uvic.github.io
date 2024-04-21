@@ -1,5 +1,7 @@
 const DEFAULT_COLOR = "hsl(221, 34%, 50%)";
 const DEFAULT_HIGHLIGHT_COLOR = "hsl(7, 92%, 50%)";
+const DEFAULT_TARGET_SATURATION = 50; 
+const DEFAULT_DISTRACTOR_SATURATION = 50; 
 const DEFAULT_TARGET_HUE = 7; // 7 degree out of 360
 const DEFAULT_DISTRACTOR_HUE = 221;
 const DEFAULT_SHAPE_NUM = 3;
@@ -99,64 +101,135 @@ function setIsMultipleFeature(value){IsMultipleFeature = value;}
 function getHueInput()
 {
     var targetHueSlider = document.getElementById("targetHueSlider");
+    var targetSaturationSlider = document.getElementById("targetSaturationSlider");
+    var targetLuminanceSlider = document.getElementById("targetLuminanceSlider");
     var distractorHueSlider = document.getElementById("distractorHueSlider");
-    var targetHueSample = document.getElementById("targetHueSample");
-    var distractorHueSample = document.getElementById("distractorHueSample");
-    targetHueSlider.addEventListener("input", function() {
-      var hue = targetHueSlider.value;
-      targetHueSample.style.backgroundColor = "hsl(" + hue + ", 34%, " + DEFAULT_TARGET_LUMINANCE + "%)";
-    });
-    distractorHueSlider.addEventListener("input", function() {
-        var hue = distractorHueSlider.value;
-        distractorHueSample.style.backgroundColor = "hsl(" + hue + ", 92%, " + DEFAULT_DISTRACTOR_LUMINANCE + "%)";
-      });
+    var distractorSaturationSlider = document.getElementById("distractorSaturationSlider");
+    var distractorLuminanceSlider = document.getElementById("distractorLuminanceSlider");
+    var targetHueNumber = document.getElementById("targetHNumber");
+    var targetSaturationNumber = document.getElementById("targetSNumber");
+    var targetLuminanceNumber = document.getElementById("targetLNumber");
+    var distractorHueNumber = document.getElementById("distractorHNumber");
+    var distractorSaturationNumber = document.getElementById("distractorSNumber");
+    var distractorLuminanceNumber = document.getElementById("distractorLNumber");
+
+    var targetSample = document.getElementById("targetHueSample");
+    var distractorSample = document.getElementById("distractorHueSample");
+    var ciedetxt = document.getElementById("ciede00_value");
+
+    function colorSListnerT(){// slider listenr for target color
+      var targetH = targetHueSlider.value;
+      var targetS = targetSaturationSlider.value;
+      var targetL = targetLuminanceSlider.value;
+      var distractorH = distractorHueSlider.value;
+      var distractorS = distractorSaturationSlider.value;
+      var distractorL = distractorLuminanceSlider.value;
+      var hslD = "hsl(" + distractorH.toString() + ", " + distractorS.toString() + "%, " + distractorL.toString() + "%)";
+      var hslT = "hsl(" + targetH.toString() + ", " + targetS.toString() + "%, " + targetL.toString() + "%)";
+
+      targetHueNumber.value = targetH;
+      targetSaturationNumber.value = targetS;
+      targetLuminanceNumber.value = targetL;
+      targetSample.style.backgroundColor = hslT;
+      let colorT = new Color(hslT);
+      let colorD = new Color(hslD);
+      ciedetxt.innerText = Color.deltaE(colorT, colorD, "2000").toString();
+    }
+    function colorSListnerD(){
+      var targetH = targetHueSlider.value;
+      var targetS = targetSaturationSlider.value;
+      var targetL = targetLuminanceSlider.value;
+      var distractorH = distractorHueSlider.value;
+      var distractorS = distractorSaturationSlider.value;
+      var distractorL = distractorLuminanceSlider.value;
+      var hslD = "hsl(" + distractorH.toString() + ", " + distractorS.toString() + "%, " + distractorL.toString() + "%)";
+      var hslT = "hsl(" + targetH.toString() + ", " + targetS.toString() + "%, " + targetL.toString() + "%)";
+
+      distractorHueNumber.value = distractorH;
+      distractorSaturationNumber.value = distractorS;
+      distractorLuminanceNumber.value = distractorL;
+      distractorSample.style.backgroundColor = hslD;
+      let colorT = new Color(hslT);
+      let colorD = new Color(hslD);
+      ciedetxt.innerText = Color.deltaE(colorT, colorD, "2000").toString();
+    }
+    function colorNListnerT(){// Number listenr for target color
+      var targetH = targetHueNumber.value;
+      var targetS = targetSaturationNumber.value;
+      var targetL = targetLuminanceNumber.value;
+      var distractorH = distractorHueSlider.value;
+      var distractorS = distractorSaturationSlider.value;
+      var distractorL = distractorLuminanceSlider.value;
+      var hslD = "hsl(" + distractorH.toString() + ", " + distractorS.toString() + "%, " + distractorL.toString() + "%)";
+      var hslT = "hsl(" + targetH.toString() + ", " + targetS.toString() + "%, " + targetL.toString() + "%)";
+
+      targetHueSlider.value = targetH;
+      targetSaturationSlider.value = targetS;
+      targetLuminanceSlider.value = targetL;
+      targetSample.style.backgroundColor = hslT;
+      let colorT = new Color(hslT);
+      let colorD = new Color(hslD);
+      ciedetxt.innerText = Color.deltaE(colorT, colorD, "2000").toString();
+    }
+    function colorNListnerD(){
+      var targetH = targetHueSlider.value;
+      var targetS = targetSaturationSlider.value;
+      var targetL = targetLuminanceSlider.value;
+      var distractorH = distractorHueNumber.value;
+      var distractorS = distractorSaturationNumber.value;
+      var distractorL = distractorLuminanceNumber.value;
+      var hslD = "hsl(" + distractorH.toString() + ", " + distractorS.toString() + "%, " + distractorL.toString() + "%)";
+      var hslT = "hsl(" + targetH.toString() + ", " + targetS.toString() + "%, " + targetL.toString() + "%)";
+
+      distractorHueSlider.value = distractorH;
+      distractorSaturationSlider.value = distractorS;
+      distractorLuminanceSlider.value = distractorL;
+      distractorSample.style.backgroundColor = hslD;
+      let colorT = new Color(hslT);
+      let colorD = new Color(hslD);
+      ciedetxt.innerText = Color.deltaE(colorT, colorD, "2000").toString();
+    }
+    
+    targetHueSlider.addEventListener("change", colorSListnerT);
+    targetSaturationSlider.addEventListener("change", colorSListnerT);
+    targetLuminanceSlider.addEventListener("change", colorSListnerT);
+    distractorHueSlider.addEventListener("change", colorSListnerD);
+    distractorSaturationSlider.addEventListener("change", colorSListnerD);
+    distractorLuminanceSlider.addEventListener("change", colorSListnerD);
+
+    targetHueNumber.addEventListener("input", colorNListnerT);
+    targetSaturationNumber.addEventListener("input", colorNListnerT);
+    targetLuminanceNumber.addEventListener("input", colorNListnerT);
+    distractorHueNumber.addEventListener("input", colorNListnerD);
+    distractorSaturationNumber.addEventListener("input", colorNListnerD);
+    distractorLuminanceNumber.addEventListener("input", colorNListnerD);
 }
 
-function getLuminanceInput()
-{
-  var luminanceSlider = document.getElementById("luminanceSlider");
-  var luminanceSample = document.getElementById("luminanceSample");
-  luminanceSlider.addEventListener("input", function() {
-    var luminance = luminanceSlider.value;
-    if(IsMultipleFeature)
-      luminanceSample.style.backgroundColor = "hsl(" + TargetHue + ", 34%, " + luminance+ "%)";
-   else
-      luminanceSample.style.backgroundColor = "hsl(" + DEFAULT_DISTRACTOR_HUE + ", 34%, " + luminance+ "%)";
-  });
-}
-
-function submitLuminanceInput(modalName)
-{
-    var luminanceSlider = document.getElementById("luminanceSlider");
-    var luminance = luminanceSlider.value;
-    initializeFeatureData("Luminance");
-    Luminance = luminance;
-    // use the distractor hue to set lumuniance the only variable
-    if(IsMultipleFeature)
-      FeatureData.targetColor = "hsl(" + TargetHue + ", 34%, " + luminance+ "%)";
-    else
-      FeatureData.targetColor = "hsl(" + DEFAULT_DISTRACTOR_HUE + ", 34%, " + luminance+ "%)";
-    generateStimulus(FeatureData,{});
-    closeModal(modalName);
-}
 
 function submitHueInput(modalName)
 {
-    var targetHueSlider = document.getElementById("targetHueSlider");
-    var distractorHueSlider = document.getElementById("distractorHueSlider");
-    var targetHue = targetHueSlider.value;
-    var distractorHue = distractorHueSlider.value;
-    TargetHue = targetHue;
-    // Call this function makes sure there is only one feature that's changing, 
-    // all the rest will maintain the default value
-    initializeFeatureData("Hue");
-    var lumi = DEFAULT_TARGET_LUMINANCE;
-    if(IsMultipleFeature) 
-      lumi = Luminance;
-    FeatureData.targetColor = "hsl(" + targetHue + ", 34%, " + lumi + "%)";
-    FeatureData.distractorColor = "hsl(" + distractorHue + ", 92%, "+ DEFAULT_DISTRACTOR_LUMINANCE + "%)";
-    generateStimulus(FeatureData,{});
-    closeModal(modalName);
+  var targetHueSlider = document.getElementById("targetHueSlider");
+  var targetSaturationSlider = document.getElementById("targetSaturationSlider");
+  var targetLuminanceSlider = document.getElementById("targetLuminanceSlider");
+  var distractorHueSlider = document.getElementById("distractorHueSlider");
+  var distractorSaturationSlider = document.getElementById("distractorSaturationSlider");
+  var distractorLuminanceSlider = document.getElementById("distractorLuminanceSlider");
+  var targetHue = targetHueSlider.value;
+  var distractorHue = distractorHueSlider.value;
+  var targetLumi = targetLuminanceSlider.value;
+  var distractorLumi = distractorLuminanceSlider.value;
+  var targetSatu = targetSaturationSlider.value;
+  var distractorSatu = distractorSaturationSlider.value;
+  // Call this function makes sure there is only one feature that's changing, 
+  // all the rest will maintain the default value
+  initializeFeatureData("Color");
+  var lumi = DEFAULT_TARGET_LUMINANCE;
+  if(IsMultipleFeature) 
+    lumi = Luminance;
+  FeatureData.targetColor = "hsl(" + targetHue +", " + targetSatu + "%, " + targetLumi + "%)";
+  FeatureData.distractorColor = "hsl(" + distractorHue + ", " + distractorSatu + "%, " + distractorLumi + "%)";
+  generateStimulus(FeatureData,{});
+  closeModal(modalName);
 }
 
 /*
@@ -227,6 +300,8 @@ function submitShapeInput(modalName){
   //if the shapes of target and distractor are the same, hue is the "preattentive feature"
   FeatureData.targetShape = TargetShape;
   FeatureData.distractorShape = DistractorShape;
+  //FeatureData.tdLengthRatio = 2; // This line is only to test another choice of shape size
   generateStimulus(FeatureData,{});
   closeShapeModal(modalName);
 }
+

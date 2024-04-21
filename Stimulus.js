@@ -14,24 +14,19 @@ const ShapeEnum = {
     Square: 'Square'
   };
 
-//default factor setting
-const defaultTargetNumber = 1;
-const defaultElementNumber = 81;
-const defaultXLocation = null;
-const defaultYLocation = null;
-const defaultSpatialPattern = null;
-const defaultProximity = null;
-
 //Macro const for the stimulus container
-const DEFAULT_RECTANGLE_SIZE = [12/43, 30/43]; //width, height
+const DEFAULT_RECTANGLE_SIZE = [0.08, 0.2]; //width, height 12/43, 30/43
 const STIMULUSCONTAINERWIDTH = 8;//inchs
 const STIMULUSCONTAINERHEIGHT = 6;
 const DPI = 96;// this DPI only works on Wei's screen
+const MINDISBETWEENELEM = 0.03; // the min distance between rectangnles
 
+const DEGREE_RECT_LENGTH = 0.5; // The subtended degree of the rectangle length;
+const DEGREE_FOCUS_LONG = 8; // The subtended degree of the focus area;
+const DEGREE_FOCUS_SHORT = 8;// 
 
-const DEGREE_RECT_LENGTH = 1.5; // The subtended degree of the display width;
-const DEGREE_FOCUS_LONG = 14; // The subtended degree of the focus area;
-const DEGREE_FOCUS_SHORT = 10;// 210/150 = DEGREE_FOCUS_LONG/DEGREE_FOCUS_SHORT
+const SQUARE_RECTWIDTH_RATIO = 1.75;
+
 // The data structure that store all necessary feature info for an experiment
 var Feature ={
   targetShape: "rectangle",
@@ -57,7 +52,9 @@ var Factor ={
   orientation: 0,
   spatialPattern: null, //string: "Gridded", "Randomized"
   proximity : null,  // type: float
-  activeFactor: "None"
+  activeFactor: "None",
+  row: 0,
+  col: 0
 }
 
 // The data structure that stores all elements
@@ -68,6 +65,15 @@ var ElementsRect = [];
 var ElementWidth = 0;
 
 var CSVFileName = "";
+
+
+function setFoveationArea(value)
+{
+  if (value)
+    document.getElementById('focus_svg_for_proximity').style.visibility = 'visible';
+  else
+    document.getElementById('focus_svg_for_proximity').style.visibility = 'hidden';
+}
 
 function defineFeature(object)
 {
@@ -141,29 +147,55 @@ function defineFactor(object)
   Factor.spatialPattern = object.spatialPattern || Factor.spatialPattern;
   Factor.proximity = object.proximity;
   Factor.activeFactor = object.activeFactor;
+  Factor.row = object.row || Factor.row;
+  Factor.col = object.col || Factor.col;
+  
+  if (Factor.spatialPattern === "Gridded"&& Factor.row * Factor.col != Factor.elementNumber)
+  {
+    // if user selected gridded by input the wrong row and/or col number,
+    // Show a message and set spatial pattern back to random
+
+    /**
+     * To D0: Show error message
+     */
+    const errorWindow = document.getElementById("error-window");
+    errorM = document.getElementById("errorMessage");
+    errorM.innerHTML = "The product of row and col is not the set size. The layout will keep being random."
+    errorWindow.style.display = 'block';
+    Factor.spatialPattern = "Randomized";
+    Factor.row = 0;
+    Factor.col = 0;
+  }
 }
 
-function createGriddedStimulus(container,rowNum)
+function createGriddedStimulus(container,rowNum,colNum)
 { 
   var elementHeight = ElementWidth;
+  var elementWidth = ElementWidth; 
   var targetsize = calculateTargetSize();
   var targetWidth = targetsize[0];
   var targetHeight = targetsize[0];
   if(Feature.distractorShape == "rectangle")
-    elementHeight = ElementWidth * defaultHeightWidthRatio;
+    elementHeight = elementWidth * defaultHeightWidthRatio;
+  if(Feature.distractorShape == 'square')
+    {
+      elementHeight = elementWidth * SQUARE_RECTWIDTH_RATIO;
+      elementWidth = elementHeight;
+    }
   if(Feature.targetShape == "rectangle")
     targetHeight = targetsize[1]; 
-  var elementPaddingH = (STIMULUSCONTAINERWIDTH - rowNum*ElementWidth)/(rowNum+1);
-  var elementPaddingV = (STIMULUSCONTAINERHEIGHT - defaultHeightWidthRatio*rowNum*ElementWidth)/(rowNum+1);
-  
+  var elementPaddingH = (STIMULUSCONTAINERWIDTH - colNum*elementWidth);
+  elementPaddingH = elementPaddingH/(+colNum +1)
+  var elementPaddingV = (STIMULUSCONTAINERHEIGHT - defaultHeightWidthRatio*rowNum*elementWidth)/(+rowNum+1);
+
   var targetPos = parseInt(Math.random() * (Factor.elementNumber));
   var count = 1;
   for (let i = 0; i < rowNum; i++) 
-    for(let j = 0; j < rowNum; j++) {
+    for(let j = 0; j < colNum; j++) {
       const element = document.createElement("div");
       
-      let x = (i+1) * (ElementWidth + elementPaddingH)-ElementWidth;
-      let y = (j+1) * (elementHeight + elementPaddingV) -elementHeight;
+      let x = (j+1) * (elementWidth + elementPaddingH)-elementWidth;
+      let y = (i+1) * (elementHeight + elementPaddingV) -elementHeight;
       element.style.position = "absolute";
       element.style.left = `${x}in`;
       element.style.top = `${y}in`;
@@ -179,16 +211,27 @@ function createGriddedStimulus(container,rowNum)
         element.style.transform = `rotate(${Feature.targetAngle}deg)`;
         if (Feature.targetShape == 'circle')
           element.style.borderRadius = `${targetWidth}in`;
+          element.addEventListener("click", function() {
+          const textElement = document.getElementById("correct-message-window");
+  
+          textElement.style.display = 'block';
+  
+          // Set a timeout to hide the text element after 3 second
+          setTimeout(function() {
+            textElement.style.display = 'none'; // or textElement.style.opacity = "0";
+          }, 1500);
+  
+        });
       }
       else
       {
         element.classList.add(Feature.distractorShape);
         element.style.backgroundColor  = Feature.distractorColor;
-        element.style.width = `${ElementWidth}in`;
+        element.style.width = `${elementWidth}in`;
         element.style.height = `${elementHeight}in`;
         element.style.transform = `rotate(${Feature.distractorAngle}deg)`;
         if (Feature.distractorShape == 'circle')
-          element.style.borderRadius = `${ElementWidth}in`;
+          element.style.borderRadius = `${elementWidth}in`;
       }
       ElementArray.push(element);
       ElementsRect.push(rect);
@@ -204,6 +247,13 @@ function calculateTargetSize()
     var distractorArea = ElementWidth*totalLengthRatio*ElementWidth;
     var targetWidth = Math.sqrt(distractorArea*Feature.tdSizeRatio/(totalLengthRatio));
     var targetHeight = targetWidth*totalLengthRatio;
+
+    if (Feature.targetShape == 'circle') // this hard coding is only for test
+    {
+      targetWidth = 2*Math.sqrt((targetWidth*SQUARE_RECTWIDTH_RATIO)**2/Math.PI);
+      targetHeight = targetWidth;
+    }
+    console.log("radius ", targetWidth)
   return [targetWidth,targetHeight];
 }
 
@@ -242,8 +292,8 @@ function createRandomTarget(container)
 
       });
       //shape determine
-      if (Feature.targetShape == 'circle')
-        target.style.borderRadius = `${targetWidth}in`;
+      // if (Feature.targetShape == 'circle')
+      //   target.style.borderRadius = `${targetWidth}in`;
       target.style.backgroundColor = Feature.targetColor;
       //rotate target
       target.style.transform = `rotate(${Feature.targetAngle}deg)`;
@@ -307,8 +357,10 @@ function drawFocusArea(container)
 { 
   const containerRect = container.getBoundingClientRect();
   var virtualViewDis = DEFAULT_RECTANGLE_SIZE[1]/Math.tan(DEGREE_RECT_LENGTH*Math.PI/180);
+  console.log("virtualViewDis ",virtualViewDis);
   var focusAreaLongRadius = DPI*virtualViewDis * Math.tan(DEGREE_FOCUS_LONG*Math.PI/180)/2;
   var focusAreaShortRadius = DPI*virtualViewDis * Math.tan(DEGREE_FOCUS_SHORT*Math.PI/180)/2;
+  console.log("focus area radius",focusAreaLongRadius);
   var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   // Set the SVG attributes (e.g., width, height)
   svg.setAttribute("width", containerRect.width.toString());
@@ -370,14 +422,20 @@ function createRandomElements(container)
   console.log("element shape: "+ Feature.distractorShape);
   const targetRect = ElementsRect[0];
   var elementHeight = ElementWidth;
+  var elementWidth = ElementWidth;
   if(Feature.distractorShape == 'rectangle')
     elementHeight = ElementWidth * defaultHeightWidthRatio;
+  if(Feature.distractorShape == 'square')
+    {
+      elementHeight = ElementWidth * SQUARE_RECTWIDTH_RATIO;
+      elementWidth = elementHeight;
+    }
   var count = 1;
   var numOutofTarget = Factor.elementNumber- Factor.targetNumber;
   while (count <= numOutofTarget) {
-      const x = Math.random() * (STIMULUSCONTAINERWIDTH - ElementWidth);
+      const x = Math.random() * (STIMULUSCONTAINERWIDTH - elementWidth);
       const y = Math.random() * (STIMULUSCONTAINERHEIGHT - elementHeight);
-      const rect = { x, y, width: ElementWidth, height: elementHeight, isTarget: "false" };
+      const rect = { x, y, width: elementWidth, height: elementHeight, isTarget: "false" };
 
       if (!checkCollision(rect, ElementsRect) && checkProximity(rect,targetRect)) {
           ElementsRect.push(rect);
@@ -386,11 +444,11 @@ function createRandomElements(container)
           element.style.position = "absolute";
           element.style.left = `${rect.x}in`;
           element.style.top = `${rect.y}in`;
-          element.style.width = `${ElementWidth}in`;
+          element.style.width = `${elementWidth}in`;
           element.style.height = `${elementHeight}in`;
           //shape determine
           if (Feature.distractorShape == 'circle')
-            element.style.borderRadius = `${ElementWidth/2}in`;
+            element.style.borderRadius = `${elementWidth/2}in`;
           element.style.backgroundColor  = Feature.distractorColor;
           //rotate element
           element.style.transform = `rotate(${Feature.distractorAngle}deg)`;
@@ -414,10 +472,10 @@ function checkCollision(element, elements)
 {
   for (const rect of elements) {
     if (
-      element.x < rect.x + rect.width + 0.005&&
-      element.x + element.width  + 0.005 > rect.x &&
-      element.y < rect.y + rect.height + 0.005 &&
-      element.y + element.height  + 0.005 > rect.y
+      element.x < rect.x + rect.width + MINDISBETWEENELEM&&
+      element.x + element.width  + MINDISBETWEENELEM > rect.x &&
+      element.y < rect.y + rect.height + MINDISBETWEENELEM &&
+      element.y + element.height  + MINDISBETWEENELEM > rect.y
     ) {
         return true;
     }
@@ -514,8 +572,8 @@ function generateStimulus(featureData, factorData) {
   
     defineFeature(featureData);
     defineFactor(factorData);
-    console.log(Feature);
-    console.log(Factor);
+    //console.log(Feature);
+    
     ElementsRect = [];
     // clear the element array
     ElementArray = [];
@@ -541,7 +599,7 @@ function generateStimulus(featureData, factorData) {
 
 
     showInfo(infoContainer,stimulusContainer,factorData);
-    var rowNum = Math.round(Math.sqrt(Factor.elementNumber));
+    //var defaultRowNum = Math.round(Math.sqrt(Factor.elementNumber));
 
     //The following line can adjust the size according to numbers automatically. But we decided to make elements' size consistent. So it's commented.
     //ElementWidth = STIMULUSCONTAINERHEIGHT/(rowNum*defaultHeightWidthRatio) - 1/rowNum
@@ -550,11 +608,20 @@ function generateStimulus(featureData, factorData) {
     ElementWidth = DEFAULT_RECTANGLE_SIZE[0];
     
     if(Factor.spatialPattern == "Gridded")
-      createGriddedStimulus(stimulusContainer,rowNum);
+      {
+        rowNum = Factor.row;
+        colNum = Factor.col;
+        if(Factor.row <=0 ||Factor.col <=0)
+          {
+            rowNum = Math.round(Math.sqrt(Factor.elementNumber));
+            colNum = rowNum;
+          }
+        createGriddedStimulus(stimulusContainer,rowNum,colNum);
+      }
     else
       {
         createRandomTarget(stimulusContainer);
         createRandomElements(stimulusContainer);
       }
-      drawFocusArea(stimulusContainer);
+    drawFocusArea(stimulusContainer);
 }

@@ -154,3 +154,78 @@ function checkProximity(element, target, Factor)
   var dy = element.y + element.height/2-target.y - target.height/2;
   return (Math.sqrt(dx**2 +dy**2) >= Factor.proximity);
 }
+
+// Function to convert RGB to Lab color space
+function rgbToLab(r, g, b) {
+  // Normalize RGB values
+  var R = r / 255;
+  var G = g / 255;
+  var B = b / 255;
+
+  // Linearize RGB values
+  R = (R > 0.04045) ? Math.pow(((R + 0.055) / 1.055), 2.4) : (R / 12.92);
+  G = (G > 0.04045) ? Math.pow(((G + 0.055) / 1.055), 2.4) : (G / 12.92);
+  B = (B > 0.04045) ? Math.pow(((B + 0.055) / 1.055), 2.4) : (B / 12.92);
+
+  // Convert RGB to XYZ
+  var X = R * 0.4124564 + G * 0.3575761 + B * 0.1804375;
+  var Y = R * 0.2126729 + G * 0.7151522 + B * 0.0721750;
+  var Z = R * 0.0193339 + G * 0.1191920 + B * 0.9503041;
+
+  // Convert XYZ to Lab
+  X = X / 0.95047;
+  Y = Y / 1.00000;
+  Z = Z / 1.08883;
+  X = (X > 0.008856) ? Math.pow(X, (1 / 3)) : (7.787 * X) + (16 / 116);
+  Y = (Y > 0.008856) ? Math.pow(Y, (1 / 3)) : (7.787 * Y) + (16 / 116);
+  Z = (Z > 0.008856) ? Math.pow(Z, (1 / 3)) : (7.787 * Z) + (16 / 116);
+
+  var L = (116 * Y) - 16;
+  var a = 500 * (X - Y);
+  var b = 200 * (Y - Z);
+
+  return [L, a, b];
+}
+
+// Function to calculate color difference using CIEDE2000 formula
+function ciede2000Lab(Lab1, Lab2) {
+  var kL = 1;
+  var kC = 1;
+  var kH = 1;
+
+  // Calculate CIEDE2000 color difference
+  var ΔL = Lab2[0] - Lab1[0];
+  var L_ = (Lab1[0] + Lab2[0]) / 2;
+  var C1 = Math.sqrt(Math.pow(Lab1[1], 2) + Math.pow(Lab1[2], 2));
+  var C2 = Math.sqrt(Math.pow(Lab2[1], 2) + Math.pow(Lab2[2], 2));
+  var C_ = (C1 + C2) / 2;
+  var a1_ = Lab1[1] + (Lab1[1] / 2) * (1 - Math.sqrt(Math.pow(C_, 7) / (Math.pow(C_, 7) + Math.pow(25, 7))));
+  var a2_ = Lab2[1] + (Lab2[1] / 2) * (1 - Math.sqrt(Math.pow(C_, 7) / (Math.pow(C_, 7) + Math.pow(25, 7))));
+  var C1_ = Math.sqrt(Math.pow(a1_, 2) + Math.pow(Lab1[2], 2));
+  var C2_ = Math.sqrt(Math.pow(a2_, 2) + Math.pow(Lab2[2], 2));
+  var ΔC_ = C2_ - C1_;
+  var ΔH_ = Math.sqrt(Math.pow(Lab1[1] - Lab2[1], 2) + Math.pow(Lab1[2] - Lab2[2], 2) - Math.pow(ΔC_, 2));
+  var H1_ = Math.atan2(Lab1[2], a1_) * (180 / Math.PI);
+  H1_ = (H1_ + 360) % 360;
+  var H2_ = Math.atan2(Lab2[2], a2_) * (180 / Math.PI);
+  H2_ = (H2_ + 360) % 360;
+  var ΔH__;
+  if (Math.abs(H1_ - H2_) <= 180) {
+      ΔH__ = H2_ - H1_;
+  } else if (H2_ <= H1_) {
+      ΔH__ = H2_ - H1_ + 360;
+  } else {
+      ΔH__ = H2_ - H1_ - 360;
+  }
+  var ΔH_ = 2 * Math.sqrt(C1_ * C2_) * Math.sin((ΔH__ / 2) * (Math.PI / 180));
+  var H_ = (Math.abs(H1_ - H2_) <= 180) ? (H1_ + H2_) / 2 : (H1_ + H2_ + 360) / 2;
+  var T = 1 - 0.17 * Math.cos((H_ - 30) * (Math.PI / 180)) + 0.24 * Math.cos(2 * H_ * (Math.PI / 180)) + 0.32 * Math.cos((3 * H_ + 6) * (Math.PI / 180)) - 0.20 * Math.cos((4 * H_ - 63) * (Math.PI / 180));
+  var SL = 1 + ((0.015 * Math.pow((L_ - 50), 2)) / Math.sqrt(20 + Math.pow((L_ - 50), 2)));
+  var SC = 1 + 0.045 * C_;
+  var SH = 1 + 0.015 * C_ * T;
+  var RT = -2 * Math.sqrt(Math.pow(C_, 7) / (Math.pow(C_, 7) + Math.pow(25, 7))) * Math.sin((60 * Math.exp(-Math.pow((H_ - 275) / 25, 2))) * (Math.PI / 180));
+
+  var ΔE00 = Math.sqrt(Math.pow(ΔL / (kL * SL), 2) + Math.pow(ΔC_ / (kC * SC), 2) + Math.pow(ΔH_ / (kH * SH), 2) + RT * (ΔC_ / (kC * SC)) * (ΔH_ / (kH * SH)));
+
+  return ΔE00;
+}

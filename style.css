@@ -64,24 +64,31 @@
     }
 
 .hueContainer {
-    display: flex;
+    
+    display: block;
     align-items: center;
 }
 
 .feature-Slider {
+    width: 75%;
     margin-right: 10px;
+    display: block; 
+}
+.slider-container {
+    width: 100%;
+    display: block; /* Each slider container starts on a new line */
+  }
+
+.hue-SampleT {
+    width: 20px;
+    height: 20px;
+    background-color: hsl(7, 92%, 50%);
 }
 
-.hue-Sample {
+.hue-SampleD {
     width: 20px;
-    height: 10px;
-    background-color: hsl(0, 100%, 50%);
-}
-
-.luminance-Sample {
-    width: 20px;
-    height: 10px;
-    background-color: hsl(221, 100%, 50%);
+    height: 20px;
+    background-color: hsl(221, 34%, 50%);
 }
 
 
@@ -137,7 +144,7 @@ background-color: yellow;
     margin: 15% auto;
     padding: 20px;
     border: 1px solid #888;
-    width: 300px;
+    width: 80%;
 }
 
 .close {
