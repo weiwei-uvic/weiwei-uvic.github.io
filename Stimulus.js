@@ -1,7 +1,7 @@
 //default feature setting
 const defaultShape = 'rectangle';
-const DEFAULTELEMENTCOLOR = '#526da8';
-const defaultTargetColor = '#f64932';
+const DEFAULTELEMENTCOLOR = '#87b0e5';
+const defaultTargetColor = '#ee9590';
 const defaultHeightWidthRatio = 2.5;
 const defaultOrientation = 'rectangle'; 
 const defaultCurvature = false;
@@ -31,8 +31,8 @@ const SQUARE_RECTWIDTH_RATIO = 1.75;
 var Feature ={
   targetShape: "rectangle",
   distractorShape: "rectangle",
-  targetColor: "hsl(7, 92%, 50%)",
-  distractorColor: "hsl(221, 34%, 50%)",
+  targetColor: "hsl(3, 73%, 75%)",
+  distractorColor: "hsl(214, 64%, 72%)",
   tdSizeRatio: 1,//the ratio between target size and distractor size
   tdLengthRatio: 1, //the ratio between target length and distractor length
   targetAngle: 0,

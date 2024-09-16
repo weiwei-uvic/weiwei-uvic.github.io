@@ -19,15 +19,13 @@
         <table class="table">
             <tr>
                 <td class = "cell-size"><a href = "#" onclick = "SAVE()">SAVE</a></td>
-                <td class = "cell-size"><a href = "#" onclick = "openHueWindow()">HUE</a></td>
+                <td class = "cell-size"><a href = "#" onclick = "openHueWindow()">COLOR</a></td>
                 <td class = "cell-size"><a href = "#" onclick = "openSizeWindow('Length')">LENGTH</a></td>
                 <td class = "cell-size"><a href = "#" onclick = "openSizeWindow('Size')">SIZE</a></td>
                 <!-- <td class = "cell-size"><a href = "#" onclick = "openLuminanceWindow()">LUMINANCE</a></td> -->
                 <td class = "cell-size"><a href = "#" onclick = "openOrientationWindow()">ORIENTATION</a></td>
                 <td class = "cell-size"><a href = "#" onclick = "openShapeWindow()">SHAPE</a></td>
                 <td class = "cell-size"><a href = "#" onclick = "handleFeatureClick(this,6)">CLOSURE</a></td>
-                <td class = "cell-size"><a href = "#" onclick = "handleFeatureClick(this,7)">CURVATURE</a></td> 
-                <td class = "cell-size"><a href = "#" onclick = "handleFeatureClick(this,8)">DENSITY</a></td>
                 <td class = "cell-size"><a href = "#" onclick = "handleFeatureClick(this,7)">CURVATURE</a></td> 
                 <td class = "cell-size"><a href = "#" onclick = "handleFeatureClick(this,8)">DENSITY</a></td>
             </tr>
@@ -151,15 +149,15 @@
             <h2 id = "hue_title">Target Color</h2>
             <div class="hueContainer">
                     <label for="input">Hue: </label>
-                    <input type="number" id="targetHNumber" min="0" max="360" value="7">
+                    <input type="number" id="targetHNumber" min="0" max="360" value="3">
                     <input type="range" id="targetHueSlider"  class = "feature-Slider" min="0" max="360" step="1" value="7">
                     
                     <label for="input">Saturation: </label>
-                    <input type="number" id="targetSNumber" min="0" max="100" value="92">
+                    <input type="number" id="targetSNumber" min="0" max="100" value="73">
                     <input type="range" id="targetSaturationSlider"  class = "feature-Slider" min="0" max="100" step="1" value="92">
                     
                     <label for="input">Luminance: </label>
-                    <input type="number" id="targetLNumber" min="0" max="100" value="50">
+                    <input type="number" id="targetLNumber" min="0" max="100" value="75">
                     <input type="range" id="targetLuminanceSlider"  class = "feature-Slider" min="0" max="100" step="1" value="50">
                     
                 <div id="targetHueSample" class = "hue-SampleT"></div>
@@ -167,14 +165,17 @@
             <h2 id = "hue_title">Distractor Color</h2>
             <div class="hueContainer">
                 <label for="input">Hue: </label>
+                <input type="number" id="distractorHNumber" min="0" max="360" value="214">
                 <input type="range" id="distractorHueSlider"  class = "feature-Slider" min="0" max="360" step="1" value="221">
-                <input type="number" id="distractorHNumber" min="0" max="360" value="221">
+                
                 <label for="input">Saturation: </label>
+                <input type="number" id="distractorSNumber" min="0" max="100" value="64">
                 <input type="range" id="distractorSaturationSlider"  class = "feature-Slider" min="0" max="100" step="1" value="34">
-                <input type="number" id="distractorSNumber" min="0" max="100" value="34">
+                
                 <label for="input">Luminance: </label>
+                <input type="number" id="distractorLNumber" min="0" max="100" value="71">
                 <input type="range" id="distractorLuminanceSlider"  class = "feature-Slider" min="0" max="100" step="1" value="50">
-                <input type="number" id="distractorLNumber" min="0" max="100" value="50">
+                
                 <div id="distractorHueSample" class = "hue-SampleD"></div>
             </div>
             <h2 id = "ciede00_txt">The CIEDE2000 difference between the two color is: <b id = "ciede00_value">0</b> </h2>

@@ -1,5 +1,5 @@
-const DEFAULT_COLOR = "hsl(221, 34%, 50%)";
-const DEFAULT_HIGHLIGHT_COLOR = "hsl(7, 92%, 50%)";
+const DEFAULT_COLOR = "hsl(214, 64%, 72%)";
+const DEFAULT_HIGHLIGHT_COLOR = "hsl(3, 73%, 75%)";
 const DEFAULT_TARGET_SATURATION = 50; 
 const DEFAULT_DISTRACTOR_SATURATION = 50; 
 const DEFAULT_TARGET_HUE = 7; // 7 degree out of 360
@@ -7,21 +7,21 @@ const DEFAULT_DISTRACTOR_HUE = 221;
 const DEFAULT_SHAPE_NUM = 3;
 const DEFAULT_TARGET_SHAPE = "rectangle";
 const DEFAULT_DISTRACTOR_SHAPE = "rectangle";
-const DEFAULT_TARGET_WIDTH = "hsl(7, 92%, 58%)";
-const DEFAULT_TARGET_LENGTH = "hsl(7, 92%, 58%)";
-const DEFAULT_DISTRACTOR_WIDTH = "hsl(7, 92%, 58%)";
-const DEFAULT_DISTRACTOR_HEIGHT = "hsl(7, 92%, 58%)";
+// const DEFAULT_TARGET_WIDTH = "hsl(7, 92%, 58%)";
+// const DEFAULT_TARGET_LENGTH = "hsl(7, 92%, 58%)";
+// const DEFAULT_DISTRACTOR_WIDTH = "hsl(7, 92%, 58%)";
+// const DEFAULT_DISTRACTOR_HEIGHT = "hsl(7, 92%, 58%)";
 const DEFAULT_TARGET_LUMINANCE = 50;
 const DEFAULT_DISTRACTOR_LUMINANCE = 50; //50%
-const DEFAULT_TARGET_ORIENTATION = "hsl(7, 92%, 58%)";
-const DEFAULT_DISTRACTOR_ORIENTATION = "hsl(7, 92%, 58%)";
+const DEFAULT_TARGET_ORIENTATION = 0;
+const DEFAULT_DISTRACTOR_ORIENTATION = 0;
 
-// target color: "hsl(7, 92%, 50%)"; distractor color: "hsl(221, 34%, 50%)"
+// target color: "hsl(3, 73%, 75%)"; distractor color: "hsl(214, 64%, 72%)"
 var FeatureData ={
     targetShape: "rectangle",
     distractorShape: "rectangle",
-    targetColor: "hsl(7, 92%, 50%)",
-    distractorColor: "hsl(221, 34%, 50%)",
+    targetColor: "hsl(3, 73%, 75%)",
+    distractorColor: "hsl(214, 64%, 72%)",
     targetHeight: null,
     tdSizeRatio: 1, //the ratio between target size and distractor size
     tdLengthRatio: 1, //the ratio between target length and distractor length
@@ -49,8 +49,8 @@ function initializeFeatureData(featureName)
     FeatureData ={
         targetShape: DEFAULT_TARGET_SHAPE,
         distractorShape: DEFAULT_DISTRACTOR_SHAPE,
-        targetColor: "hsl(221, 34%, 50%)",
-        distractorColor: "hsl(221, 34%, 50%)",
+        targetColor: "hsl(214, 64%, 72%)",
+        distractorColor: "hsl(214, 64%, 72%)",
         tdSizeRatio: 1,
         tdLengthRatio: 1,
         targetAngle: 0,
@@ -133,7 +133,7 @@ function getHueInput()
       targetSample.style.backgroundColor = hslT;
       let colorT = new Color(hslT);
       let colorD = new Color(hslD);
-      ciedetxt.innerText = Color.deltaE(colorT, colorD, "2000").toString();
+      ciedetxt.innerText = Math.floor(Color.deltaE(colorT, colorD, "2000")).toString();
     }
     function colorSListnerD(){
       var targetH = targetHueSlider.value;
@@ -151,7 +151,7 @@ function getHueInput()
       distractorSample.style.backgroundColor = hslD;
       let colorT = new Color(hslT);
       let colorD = new Color(hslD);
-      ciedetxt.innerText = Color.deltaE(colorT, colorD, "2000").toString();
+      ciedetxt.innerText = Math.floor(Color.deltaE(colorT, colorD, "2000")).toString();
     }
     function colorNListnerT(){// Number listenr for target color
       var targetH = targetHueNumber.value;
@@ -169,7 +169,7 @@ function getHueInput()
       targetSample.style.backgroundColor = hslT;
       let colorT = new Color(hslT);
       let colorD = new Color(hslD);
-      ciedetxt.innerText = Color.deltaE(colorT, colorD, "2000").toString();
+      ciedetxt.innerText = Math.floor(Color.deltaE(colorT, colorD, "2000")).toString();
     }
     function colorNListnerD(){
       var targetH = targetHueSlider.value;
@@ -187,7 +187,7 @@ function getHueInput()
       distractorSample.style.backgroundColor = hslD;
       let colorT = new Color(hslT);
       let colorD = new Color(hslD);
-      ciedetxt.innerText = Color.deltaE(colorT, colorD, "2000").toString();
+      ciedetxt.innerText = Math.floor(Color.deltaE(colorT, colorD, "2000")).toString();
     }
     
     targetHueSlider.addEventListener("change", colorSListnerT);
@@ -242,7 +242,7 @@ function useDeafult(modalName){
 
   //the default feature is hue
   if( modalName == "hue_input_window")
-    FeatureData.targetColor = "hsl(7, 92%, 50%)";
+    FeatureData.targetColor = "hsl(3, 73%, 75%)";
   generateStimulus(FeatureData,{});
   closeModal(modalName);
 }
